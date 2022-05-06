@@ -16,70 +16,62 @@ Laravel Provee dos tipos de componentes auxiliares para facilitar la prueba de a
 
 - Seeder: Las Componentes o clases **semilla** permiten "sembrar" la base de datos con determinado número de datos de prueba basados en Factories. 
 
-
-## Prerrequsitos
-
--   PHP versión 8.\*
--   **Gestor de dependencias**: Composer 2.\*
--   Base de datos **Mysql** o **MariaDB**
--   Crear una base de Datos en el motor anterior, llamada: _latiendaphp_
-
-## Instalación
-
-Ingresar en el prompt de una terminal:
-
-    composer create-project laravel/laravel latiendaPHP
-
-## Configuración
-
-En el archivo **.env** , modificar las lineas correspondiente a la conexión a base de datos(a continuación un ejemplo para **XAMPP**):
-
-    DB_CONNECTION=mysql
-    DB_HOST=127.0.0.1
-    DB_PORT=3306
-    DB_DATABASE=laTiendaPHP
-    DB_USERNAME=root
-    DB_PASSWORD=
-
-## Primeros Pasos:
-
-Dado el siguiente modelo de dominio actualizado:
-
-<img  src="arq/domain_models/v1.png" width="400">
-
-Crearemos en primer lugar los _modelos_ y sus componentes auxiliares(**Factory** y **Seeder**)n en el siguiente orden:
+En el ejercicio anterior, al ingresar el comando: 
 
     php artisan make:model Marca -mfs
-    php artisan make:model Categoria -mfs
-    php artisan make:model Producto -mfs
 
-A continuación crearemos atributos en cada migración:
+la opción
+ 
+    -mfs
 
-_create_marcas_table_
+Crea los componentes auxiliares migración, **factory** y **seeder** para el modelo **Marca**
 
-    Schema::create('marcas', function (Blueprint $table) {
-            $table->id();
-            $table->string("nombre");
-            $table->timestamps();
-        });
+---
 
-_create_categorias_table_
+### Factory Marca
 
-    Schema::create('categorias', function (Blueprint $table) {
-            $table->id();
-            $table->string("nombre");
-            $table->timestamps();
-        });
+La Factory Marca comprende un método **definition** el cual define, mediante un arreglo, que tipo de dato **fake** se creará para cada atributo de la **entity** Marca. Este tipo de dato lo creará el componente externo [faker](https://fakerphp.github.io/):
 
-_create_productos_table_
 
-    Schema::create('productos', function (Blueprint $table) {
-            $table->id();
-            $table->string("nombre");
-            $table->text("imagen");
-            $table->longText("desc");
-            $table->decimal('precio', $precision = 8, $scale = 2);
-            $table->foreignId('marca_id')->constrained();
-            $table->foreignId('categoria_id')->constrained();
-            $table->timestamps();
-        });
+
+    class MarcaFactory extends Factory
+    {
+        /**
+        * Define the model's default state.
+        *
+        * @return array<string, mixed>
+        */
+        public function definition()
+        {
+            return [
+                'nombre' => $this->faker->word,
+                
+            ];
+        }
+    }
+
+
+---
+### Seeder Marca
+
+Un Seeder es un componente de tipo class, el cual comprende un método **run** en el cual se define la manera de "sembrar" la base de datos con el Factory respectivo. En nuestro caso, Crearemos 10 **MarcaFactories** (10 entidades Marca) en la tabla **marcas**
+
+    class MarcaSeeder extends Seeder
+    {
+        /**
+        * Run the database seeds.
+        *
+        * @return void
+        */
+        public function run()
+        {
+            Marca::factory(10)->create();
+        }
+    }
+
+---
+### Ejecutando un Seeder: 
+
+el siguiente comando permite ejecutar el seeder específico de Marca:
+
+    php artisan db:seed --class:MarcaSeeder
