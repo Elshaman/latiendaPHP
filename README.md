@@ -8,10 +8,14 @@
     </tr>
 </table>
 
-# LaTiendaPHP
+# LaTiendaPHP - Factories y Seeders
 
-Es un proyecto para aprendizaje de elementos arquitectónicos del estándar REST, utilizando el lenguaje de programación PHP.
-El Dominio del problema es: **Ventas Online**
+Laravel Provee dos tipos de componentes auxiliares para facilitar la prueba de aplicacionesbasadas en bases de datos:
+
+- Factory: Permite establecer un conjunto predeternimado de tipos de valores, para cada uno de los atributos de una **entidad**, utilizando el componente utilitario [Faker](https://fakerphp.github.io/formatters/)
+
+- Seeder: Las Componentes o clases **semilla** permiten "sembrar" la base de datos con determinado número de datos de prueba basados en Factories. 
+
 
 ## Prerrequsitos
 
