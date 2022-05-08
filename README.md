@@ -8,70 +8,143 @@
     </tr>
 </table>
 
-# LaTiendaPHP - Factories y Seeders
+# LaTiendaPHP - Formulario de Ingreso de producto
 
-Laravel Provee dos tipos de componentes auxiliares para facilitar la prueba de aplicacionesbasadas en bases de datos:
-
-- Factory: Permite establecer un conjunto predeternimado de tipos de valores, para cada uno de los atributos de una **entidad**, utilizando el componente utilitario [Faker](https://fakerphp.github.io/formatters/)
-
-- Seeder: Las Componentes o clases **semilla** permiten "sembrar" la base de datos con determinado número de datos de prueba basados en Factories. 
-
-En el ejercicio anterior, al ingresar el comando: 
-
-    php artisan make:model Marca -mfs
-
-la opción
- 
-    -mfs
-
-Crea los componentes auxiliares migración, **factory** y **seeder** para el modelo **Marca**
+El formulario de ingreso de producto se base en [materialize forms](https://materializecss.com/text-inputs.html). Tendrá un menú que estará en el layout del cual heredarán todas las vistas del proyecto, y la vista particular del formulario
 
 ---
 
-### Factory Marca
+## Layout Principal
 
-La Factory Marca comprende un método **definition** el cual define, mediante un arreglo, que tipo de dato **fake** se creará para cada atributo de la **entity** Marca. Este tipo de dato lo creará el componente externo [faker](https://fakerphp.github.io/):
+El layout principal está en la carpeta **resources/views/layout** y s¿lo llamaremos **principal.blade.php** este es el código: 
 
+    <!DOCTYPE html>
+    <html lang="en">
 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <title>Document</title>
+    </head>
 
-    class MarcaFactory extends Factory
-    {
-        /**
-        * Define the model's default state.
-        *
-        * @return array<string, mixed>
-        */
-        public function definition()
-        {
-            return [
-                'nombre' => $this->faker->word,
-                
-            ];
-        }
-    }
+    <body>
+        <nav>
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo">Logo</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="sass.html">Sass</a></li>
+                    <li><a href="badges.html">Components</a></li>
+                    <li><a href="collapsible.html">JavaScript</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+        @yield('contenido')
+        </div>
+        <!--JavaScript at end of body for optimized loading-->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js">
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var elems = document.querySelectorAll('select');
+                var instances = M.FormSelect.init(elems, {});
+            });
+        </script>
+    </body>
 
+    </html>
+
+observe que contiene 
+las librerías 
+de materialize y google 
+fonts icons, junto con codigo 
+javascript para inicializar 
+los **select** en el formulario de 
+Registro de producto
 
 ---
-### Seeder Marca
 
-Un Seeder es un componente de tipo class, el cual comprende un método **run** en el cual se define la manera de "sembrar" la base de datos con el Factory respectivo. En nuestro caso, Crearemos 10 **MarcaFactories** (10 entidades Marca) en la tabla **marcas**
+## Formulario de Registro de Producto:
 
-    class MarcaSeeder extends Seeder
-    {
-        /**
-        * Run the database seeds.
-        *
-        * @return void
-        */
-        public function run()
-        {
-            Marca::factory(10)->create();
-        }
-    }
+Haremos el formulario de registro de producto en el archivo **resources/views/productos/create.blade.php:**
 
----
-### Ejecutando un Seeder: 
 
-el siguiente comando permite ejecutar el seeder específico de Marca:
+    @extends('layouts.principal')
 
-    php artisan db:seed --class:MarcaSeeder
+    @section('contenido')
+        <div class="row">
+            <h2 class="blue-text text-lighten-1"> Nuevo Producto </h2>
+        </div>
+        <div class="row">
+            <form class="col s12" method="POST" action="{{ route('productos.store') }}">
+                @csrf
+                <div class="row">
+                    <div class="input-field col s8">
+                        <i class="material-icons prefix">devices_other</i>
+                        <input id="nombre" type="text" class="validate">
+                        <label for="nombre">Nombre</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s8">
+                        <i class="material-icons prefix">dvr</i>
+                        <textarea id="desc" class="materialize-textarea"></textarea>
+                        <label for="desc">Descripción</label>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            <i class="material-icons prefix">local_atm</i>
+                            <input id="precio" type="text" class="validate">
+                            <label for="precio">Precio</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="file-field input-field col s8">
+                            <div class="btn">
+                                <span>Imagen de producto...</span>
+                                <input type="file">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            <select>
+                                <option value="" disabled selected>Escoje marca</option>
+                                @foreach ($marcas as $marca)
+                                    <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
+                                @endforeach
+                            </select>
+                            <label>Selección de marca</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            <select>
+                                <option value="" disabled selected>Escoje categoría</option>
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                @endforeach
+                            </select>
+                            <label>Selección de categoría</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="s8">
+                            <button class="btn waves-effect waves-light" type="submit" name="action">Guardar
+                                <i class="material-icons right">send</i>
+                            </button>
+
+                        </div>
+
+                    </div>
+            </form>
+        </div>
+    @endsection
+
+    
